@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>心灵驿站 · 匿名心理互助平台</title>
+<meta name="description" content="班级心理委员的匿名互助小站：跨设备留言信箱式聊天、加好友、图片视频、聊天记录。基于 Supabase 免费云端。">
+<script>
+try { if (localStorage.getItem('xlh.theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+</script>
+<style>
+:root{--bg:#eef1fb;--card:#fff;--card2:#f6f8ff;--text:#2b3350;--muted:#7b86a8;--line:#e5e9f7;--brand:#6c7bff;--brand2:#9a6cff;--grad:linear-gradient(135deg,#6c7bff,#9a6cff);--grad2:linear-gradient(135deg,#6ee7d0,#4cc9f0);--ok:#34c98e;--warn:#ffb84d;--danger:#ff6b81;--shadow:0 10px 30px rgba(90,100,180,.12);--radius:18px}
+.dark{--bg:#141722;--card:#1e2333;--card2:#252b40;--text:#e7ebf7;--muted:#8b93b5;--line:#2e3550;--shadow:0 10px 30px rgba(0,0,0,.35)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
+::selection{background:rgba(108,123,255,.25)}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea{font-family:inherit}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:rgba(130,140,190,.35);border-radius:8px}
+::-webkit-scrollbar-track{background:transparent}
+.app{max-width:900px;margin:0 auto;padding:0 14px calc(96px + env(safe-area-inset-bottom))}
+header.top{position:sticky;top:0;z-index:30;margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;letter-spacing:.5px;white-space:nowrap}
+.brand .logo{width:34px;height:34px;border-radius:11px;background:var(--grad);display:grid;place-items:center;font-size:18px;box-shadow:0 4px 12px rgba(108,123,255,.4)}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.pill-ctn{display:flex;align-items:center;gap:6px;font-size:12px;background:var(--card);border:1px solid var(--line);padding:5px 11px;border-radius:999px;color:var(--muted);white-space:nowrap}
+.pill-ctn .s{width:8px;height:8px;border-radius:50%;background:#f1c40f;display:inline-block}
+.pill-ctn.on .s{background:var(--ok);animation:pulse 2s infinite}
+.pill-ctn.off .s{background:var(--danger)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(52,201,142,.5)}50%{box-shadow:0 0 0 5px rgba(52,201,142,0)}}
+.icon-btn{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-size:17px;background:var(--card);border:1px solid var(--line);transition:.2s}
+.icon-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.icon-btn:active{transform:scale(.93)}
+nav.tabs{display:flex;gap:6px;overflow-x:auto;padding:12px 2px 4px;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:8px 15px;border-radius:999px;font-size:14px;font-weight:600;color:var(--muted);background:var(--card);border:1px solid var(--line);transition:.2s;position:relative}
+.tab:hover{color:var(--text);transform:translateY(-1px)}
+.tab.active{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 6px 16px rgba(108,123,255,.35)}
+.tab .badge{position:absolute;top:-5px;right:-3px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--danger);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.card+.card{margin-top:12px}
+.card h3{margin:0 0 10px;font-size:15px;display:flex;align-items:center;gap:8px}
+.hint{font-size:12.5px;color:var(--muted);line-height:1.7}
+.pill-btn{background:var(--grad);color:#fff;padding:8px 16px;border-radius:11px;font-size:13.5px;font-weight:700;transition:.2s;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.pill-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.pill-btn:active{transform:scale(.96)}
+.ghost-btn{background:var(--card2);border:1px solid var(--line);color:var(--text);padding:8px 14px;border-radius:11px;font-size:13px;font-weight:600;transition:.2s}
+.ghost-btn:hover{border-color:var(--brand);color:var(--brand)}
+.danger-btn{background:var(--card2);border:1px solid var(--line);color:var(--danger);padding:8px 14px;border-radius:11px;font-size:13px;font-weight:600}
+input[type=text],textarea,input[type=password]{width:100%;border:1px solid var(--line);background:var(--card2);color:var(--text);border-radius:12px;padding:11px 13px;font-size:14px;outline:none;transition:border .2s}
+input:focus,textarea:focus{border-color:var(--brand)}
+textarea{resize:none}
+.msg-list{display:flex;flex-direction:column;gap:10px;padding:8px 2px}
+.day-divider{align-self:center;font-size:11px;color:var(--muted);background:var(--card2);border:1px solid var(--line);padding:3px 12px;border-radius:999px;margin:4px 0}
+.msg{display:flex;gap:9px;max-width:100%;animation:pop .18s ease}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg .ava{flex:0 0 auto;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:19px;background:var(--card2);border:1px solid var(--line)}
+.msg .m-body{max-width:calc(100% - 60px);min-width:0}
+.msg .m-meta{display:flex;align-items:baseline;gap:7px;margin:0 0 3px 3px}
+.msg .m-nick{font-size:12.5px;font-weight:700}
+.msg .m-time{font-size:10.5px;color:var(--muted)}
+.bubble{display:inline-block;padding:9px 13px;border-radius:16px;font-size:14.5px;line-height:1.65;background:var(--card);border:1px solid var(--line);white-space:pre-wrap;word-break:break-word;border-top-left-radius:5px}
+.msg.me{flex-direction:row-reverse}
+.msg.me .bubble{background:var(--grad);color:#fff;border:none;border-radius:16px;border-top-right-radius:5px}
+.msg.me .m-body{display:flex;flex-direction:column;align-items:flex-end}
+.msg.me .m-meta{flex-direction:row-reverse}
+.msg .attach{border-radius:14px;overflow:hidden;max-width:260px;display:block;border:1px solid var(--line);background:#000}
+.msg .attach img{width:100%;max-height:240px;object-fit:cover;display:block;cursor:zoom-in}
+.msg .attach video{width:100%;max-height:260px;display:block;border-radius:14px}
+.msg .del-btn{font-size:11px;color:var(--muted);background:none;padding:2px 6px;border-radius:7px;opacity:.6}
+.msg .del-btn:hover{opacity:1;color:var(--danger);background:var(--card2)}
+.msg .st{font-size:10px;color:var(--muted);opacity:.8}
+.sys-card{align-self:center;max-width:92%;background:linear-gradient(135deg,rgba(110,231,208,.16),rgba(108,123,255,.14));border:1px dashed rgba(108,123,255,.45);border-radius:14px;padding:9px 14px;font-size:12.8px;line-height:1.7;color:var(--text);display:flex;gap:8px;align-items:flex-start;animation:pop .18s ease}
+.sys-card .tt{font-weight:700;white-space:nowrap}
+.composer{position:fixed;left:0;right:0;bottom:0;z-index:25;padding:8px 14px calc(8px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.composer .inner{max-width:900px;margin:0 auto;display:flex;gap:8px;align-items:flex-end}
+.composer textarea{flex:1;max-height:120px;min-height:44px;line-height:1.5;padding:11px 14px;border-radius:22px}
+.attach-btn{flex:0 0 auto;width:42px;height:44px;border-radius:22px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;font-size:17px;transition:.15s}
+.attach-btn:hover{border-color:var(--brand)}
+.attach-btn:active{transform:scale(.92)}
+.send-btn{flex:0 0 auto;height:44px;min-width:60px;padding:0 18px;border-radius:22px;background:var(--grad);color:#fff;font-weight:800;font-size:14px;display:grid;place-items:center;transition:.2s;box-shadow:0 6px 16px rgba(108,123,255,.35)}
+.send-btn:hover{filter:brightness(1.1)}
+.send-btn:active{transform:scale(.94)}
+.emoji-tray{display:none;max-width:900px;margin:6px auto 0;gap:6px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px}
+.emoji-tray.open{display:flex}
+.emoji-tray span{font-size:21px;cursor:pointer;padding:3px;border-radius:8px;transition:background .15s}
+.emoji-tray span:hover{background:var(--card2)}
+.overlay{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:18px;background:rgba(20,24,40,.55);backdrop-filter:blur(6px)}
+.overlay.hidden{display:none}
+.ob-card{width:100%;max-width:440px;max-height:92vh;overflow:auto;animation:pop .3s ease}
+.avatar-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:10px 0}
+.avatar-grid button{aspect-ratio:1;font-size:22px;border-radius:12px;background:var(--card2);border:2px solid transparent;display:grid;place-items:center;transition:.15s}
+.avatar-grid button:hover{transform:scale(1.1)}
+.avatar-grid button.on{border-color:var(--brand);background:rgba(108,123,255,.15)}
+.ob-step-title{font-size:16px;font-weight:800;margin:6px 0 2px}
+.big-ava{width:74px;height:74px;border-radius:22px;background:var(--card2);border:1px solid var(--line);display:grid;place-items:center;font-size:40px}
+.fld{margin:9px 0}
+.fld label{display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin-bottom:5px}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:13px}
+.person{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:14px;transition:.15s}
+.person:hover{background:var(--card2)}
+.person .p-ava{flex:0 0 auto;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:22px;background:var(--card2);border:1px solid var(--line);position:relative}
+.person .p-on{position:absolute;right:-2px;bottom:-2px;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid var(--card)}
+.person .p-info{min-width:0;flex:1}
+.person .p-nick{font-weight:700;font-size:14.5px;display:flex;gap:7px;align-items:center}
+.person .p-nick .p-st{font-size:10.5px;font-weight:600;color:var(--ok)}
+.person .p-nick .p-st.off{color:var(--muted)}
+.person .p-id{font-size:11px;color:var(--muted);font-family:ui-monospace,Consolas,monospace;word-break:break-all}
+.person .acts{display:flex;gap:6px;flex:0 0 auto}
+.mini-btn{font-size:12px;font-weight:700;padding:6px 11px;border-radius:9px;background:var(--card2);border:1px solid var(--line);color:var(--text);white-space:nowrap;transition:.15s}
+.mini-btn:hover{border-color:var(--brand);color:var(--brand)}
+.mini-btn.ok{background:var(--grad);color:#fff;border:none}
+.mini-btn.danger:hover{border-color:var(--danger);color:var(--danger)}
+.req-card{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(255,184,77,.14),rgba(255,107,129,.12));border:1px solid rgba(255,184,77,.5);border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.empty-tip{text-align:center;color:var(--muted);font-size:13px;padding:16px 8px}
+.mood-faces{display:flex;gap:8px;justify-content:space-between;margin:6px 0 12px}
+.mface{flex:1;max-width:64px;aspect-ratio:1;border-radius:16px;background:var(--card2);border:2px solid transparent;display:grid;place-items:center;font-size:26px;transition:.15s}
+.mface:hover{transform:translateY(-3px)}
+.mface.on{border-color:var(--brand);background:rgba(108,123,255,.14);transform:translateY(-3px);box-shadow:0 6px 14px rgba(108,123,255,.25)}
+.chart-row{display:flex;align-items:flex-end;gap:7px;height:120px;padding-top:6px}
+.chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end}
+.chart-bar{width:70%;border-radius:7px 7px 3px 3px;min-height:3px;transition:height .5s ease}
+.chart-lb{font-size:10px;color:var(--muted)}
+.entry{display:flex;gap:10px;align-items:flex-start;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:11px 13px;margin-bottom:9px}
+.entry .e-face{font-size:24px}
+.entry .e-note{flex:1;font-size:13.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.entry .e-time{font-size:11px;color:var(--muted);margin-top:3px}
+.stage{display:grid;place-items:center;padding:26px 0 8px}
+.ring{width:230px;height:230px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 30%,rgba(108,123,255,.28),rgba(154,108,255,.5));box-shadow:0 0 0 14px rgba(108,123,255,.12),0 0 0 30px rgba(108,123,255,.06),0 14px 40px rgba(108,123,255,.3);transform:scale(.92);transition:transform 4s ease-in-out}
+.ring .in{font-size:19px;font-weight:800;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.2)}
+.ring .cnt{font-size:12px;color:rgba(255,255,255,.85);margin-top:2px}
+.pat{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;border-radius:13px;background:var(--card2);border:1.5px solid var(--line);margin-bottom:8px;cursor:pointer;transition:.15s}
+.pat:hover{border-color:var(--brand)}
+.pat.on{border-color:var(--brand);background:rgba(108,123,255,.12)}
+.pat b{font-size:14px;display:block}
+.pat small{color:var(--muted);font-size:12px}
+.hotline{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:var(--card2);border:1px solid var(--line);margin-bottom:9px}
+.hotline .h-ic{flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:var(--grad2);display:grid;place-items:center;font-size:19px;color:#fff}
+.hotline b{font-size:14.5px}
+.hotline .tel{margin-left:auto;font-weight:800;color:var(--brand);font-size:15px;text-decoration:none;white-space:nowrap}
+details.help{background:var(--card2);border:1px solid var(--line);border-radius:13px;margin-bottom:8px;overflow:hidden}
+details.help summary{padding:12px 14px;font-weight:700;font-size:14px;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+details.help summary::before{content:"🌿"}
+details.help[open] summary{border-bottom:1px solid var(--line)}
+details.help .b{padding:11px 15px;font-size:13.5px;line-height:1.9;color:var(--muted)}
+.quote{font-size:15.5px;line-height:1.9;text-align:center;padding:20px 14px}
+.quote .q-mark{font-size:30px;opacity:.5;line-height:0;vertical-align:-12px}
+.lightbox{position:fixed;inset:0;z-index:90;background:rgba(10,12,22,.92);display:none;place-items:center;padding:16px}
+.lightbox.open{display:grid}
+.lightbox img{max-width:96vw;max-height:88vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.lb-x{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:20px}
+.toasts{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:120;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(92vw,420px);pointer-events:none}
+.toast{background:#1e2333;color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;box-shadow:0 10px 26px rgba(0,0,0,.3);animation:pop .25s ease;max-width:100%;text-align:center;line-height:1.5}
+.toast.ok{background:linear-gradient(135deg,#34c98e,#2bb3e8)}
+.toast.warn{background:linear-gradient(135deg,#ff9d4d,#ff6b81)}
+.hr{height:1px;background:var(--line);margin:13px 0;border:none}
+.meter{height:9px;border-radius:9px;background:var(--card2);overflow:hidden;border:1px solid var(--line)}
+.meter i{display:block;height:100%;border-radius:9px;background:var(--grad);transition:width .4s}
+.footer-note{text-align:center;color:var(--muted);font-size:12px;line-height:1.9;padding:22px 6px 6px}
+.kv{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:7px 2px;border-bottom:1px dashed var(--line);align-items:center}
+.kv:last-child{border-bottom:none}
+.kv b{color:var(--muted);font-weight:600}
+.step-line{display:flex;gap:9px;align-items:flex-start;font-size:13px;line-height:1.7;color:var(--muted);margin:5px 0}
+.step-line b{color:var(--text)}
+.view{display:none}
+.view.on{display:block;animation:pop .2s ease}
+.chat-topbar{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.back-btn{width:34px;height:34px;border-radius:10px;background:var(--card2);border:1px solid var(--line);font-size:15px;display:grid;place-items:center}
+.id-chip{font-family:ui-monospace,Consolas,monospace;background:var(--card2);border:1px dashed var(--line);padding:3px 9px;border-radius:8px;font-size:12px;color:var(--brand);cursor:pointer;white-space:nowrap}
+.online-chip{display:inline-flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:12.5px;margin:0 6px 6px 0;cursor:pointer;transition:.15s}
+.online-chip:hover{border-color:var(--brand)}
+.cloud-banner{display:flex;gap:10px;align-items:center;background:linear-gradient(135deg,rgba(255,184,77,.18),rgba(255,107,129,.16));border:1px solid rgba(255,150,90,.55);border-radius:14px;padding:11px 13px;font-size:13px;line-height:1.6;margin-bottom:12px}
+.cloud-banner button{flex:0 0 auto}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(108,123,255,.35);border-top-color:var(--brand);border-radius:50%;animation:spin 1s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sync-tip{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:8px}
+@media (max-width:560px){.msg .ava{width:34px;height:34px;font-size:17px}.ring{width:190px;height:190px}.quote{font-size:14px}}
+</style>
+</head>
+<body>
+
+<!-- 云端设置（首次需要） -->
+<div class="overlay hidden" id="m-setup">
+  <div class="card ob-card">
+    <div style="text-align:center">
+      <div style="width:60px;height:60px;margin:0 auto 8px;border-radius:18px;background:var(--grad);display:grid;place-items:center;font-size:28px">☁️</div>
+      <div style="font-size:18px;font-weight:900">云端设置</div>
+      <div class="hint" style="margin-top:6px">本页面<b>已内置你们项目的云端地址与公开密钥</b>，打开即自动连接，同学无需填写任何内容。<br>只有当你想改连到<b>另一个 Supabase 项目</b>时，才需要在这里修改（会覆盖内置默认值）。</div>
+    </div>
+    <div class="fld"><label>Project URL</label><input type="text" id="cfg-url" class="mono" spellcheck="false" placeholder="https://xxxx.supabase.co"></div>
+    <div class="fld"><label>anon public key（publishable key）</label><input type="password" id="cfg-key" class="mono" spellcheck="false" placeholder="sb_publishable_… / eyJhbGciOi…"></div>
+    <div class="hint">密钥已内置时可点「稍后」关闭；留空/报错都不会影响已内置的默认配置。</div>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button class="pill-btn" id="btn-cfg-save" style="flex:1">保存并连接</button>
+      <button class="ghost-btn" id="btn-cfg-later" style="flex:1">稍后</button>
+    </div>
+    <div id="cfg-msg" class="hint" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- 欢迎 / 匿名身份注册 -->
+<div class="overlay hidden" id="m-onboard">
+  <div class="card ob-card">
+    <div style="text-align:center">
+      <div style="width:64px;height:64px;margin:2px auto 8px;border-radius:20px;background:var(--grad);display:grid;place-items:center;font-size:30px;box-shadow:0 8px 20px rgba(108,123,255,.4)">🌊</div>
+      <div style="font-size:20px;font-weight:900;letter-spacing:1px">心灵驿站</div>
+      <div class="hint" style="margin-top:4px">一个只属于我们班的匿名互助小站<br>可以放心倾诉，也可以静静倾听</div>
+    </div>
+    <div style="margin-top:14px">
+      <div class="ob-step-title">① 选一个心情头像</div>
+      <div class="avatar-grid" id="avatar-grid"></div>
+      <div class="ob-step-title" style="margin-top:12px">② 给自己起个匿名昵称</div>
+      <input type="text" id="inp-nick" maxlength="12" placeholder="例如：今天的风 / 晚霞收藏家" style="margin-top:8px">
+      <div class="hint" style="margin-top:8px">🔒 匿名原则：不填姓名学号。留言（消息/好友申请/图片视频）存放在你的 Supabase 项目云端，对方任何时间打开网页都能取信，无需同时在线。</div>
+      <button class="pill-btn" id="btn-enter" style="width:100%;margin-top:14px;padding:12px">匿名进入 🌿</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <header class="top">
+    <div class="brand"><div class="logo">🌊</div><span>心灵驿站</span></div>
+    <div class="hdr-right">
+      <div class="pill-ctn off" id="cloud-pill" title="云端状态"><span class="s"></span><span id="cloud-pill-txt">未连接</span></div>
+      <button class="icon-btn" id="btn-theme" title="切换深色/浅色">🌙</button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="nav">
+    <button class="tab active" data-view="lobby">🏠 匿名广场</button>
+    <button class="tab" data-view="friends">👥 好友</button>
+    <button class="tab" data-view="mood">🌈 心情日记</button>
+    <button class="tab" data-view="relax">🧘 放松练习</button>
+    <button class="tab" data-view="res">📖 心理资源</button>
+    <button class="tab" data-view="settings">⚙️ 我的</button>
+  </nav>
+
+  <div id="cloud-banner-wrap"></div>
+
+  <!-- 匿名广场 -->
+  <section class="view on" id="v-lobby">
+    <div class="card" style="padding:13px 15px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <b style="font-size:14px">🌊 匿名广场</b>
+        <span style="flex:1"></span>
+        <span class="hint">我的匿名ID</span>
+        <span class="id-chip" id="lobby-me-chip" title="点击复制">······</span>
+      </div>
+      <div class="hint" style="margin-top:8px">留言信箱式广场：你发的话会放进云端，所有人打开页面时自动取到。文明倾诉、温柔倾听；紧急危机请拨 <b>12356</b> 或 <b>110</b>。</div>
+      <div style="margin-top:9px;display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+        <span class="hint">当前在线：</span><span id="lobby-online"></span>
+      </div>
+      <div class="sync-tip"><span id="sync-ind" style="width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block"></span><span id="sync-tip">准备就绪</span><button class="del-btn" id="btn-sync-now" style="margin-left:auto">立即刷新</button></div>
+    </div>
+    <div class="card" style="margin-top:12px;padding:14px 12px">
+      <div class="msg-list" id="lobby-msgs"></div>
+    </div>
+  </section>
+
+  <!-- 好友 -->
+  <section class="view" id="v-friends">
+    <div class="card">
+      <h3>➕ 添加好友</h3>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="add-inp" maxlength="12" placeholder="对方匿名ID（如 A8F2KQ…）">
+        <button class="pill-btn" id="btn-add" style="white-space:nowrap">发送申请</button>
+      </div>
+      <div class="hint" style="margin-top:8px">对方不在线没关系：申请会存入云端，对方打开网页就能看到并处理。</div>
+    </div>
+    <div class="card" id="reqs-card">
+      <h3>💌 好友申请</h3>
+      <div id="reqs-list"><div class="empty-tip">正在同步…</div></div>
+    </div>
+    <div class="card">
+      <h3>🟢 当前在线</h3>
+      <div id="online-list"><div class="empty-tip">正在获取在线状态…</div></div>
+    </div>
+    <div class="card">
+      <h3>👥 我的好友 <span id="friends-count" class="hint"></span></h3>
+      <div id="friends-list"><div class="empty-tip">正在同步…</div></div>
+    </div>
+  </section>
+
+  <!-- 心情日记 -->
+  <section class="view" id="v-mood">
+    <div class="card">
+      <h3>🌈 今天感觉怎么样？</h3>
+      <div class="mood-faces" id="mood-faces"></div>
+      <textarea id="mood-note" rows="2" maxlength="400" placeholder="想记点什么都可以，只有你自己能看到……（可选）"></textarea>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+        <button class="pill-btn" id="mood-save">记录今天 ✍️</button>
+        <span style="flex:1"></span>
+        <span class="hint">已记录 <b id="mood-total">0</b> 天 · 连续 <b id="mood-streak">0</b> 天</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>📊 最近一周心情曲线</h3>
+      <div class="chart-row" id="mood-chart"></div>
+      <div class="hint" style="margin-top:6px">每个小柱代表当天的心情值（😞1 – 😄5）。</div>
+    </div>
+    <div class="card">
+      <h3>📔 心情回顾</h3>
+      <div id="mood-list"></div>
+    </div>
+  </section>
+
+  <!-- 放松练习 -->
+  <section class="view" id="v-relax">
+    <div class="card">
+      <h3>🧘 呼吸放松引导</h3>
+      <div class="hint">跟着圆圈的节奏呼吸：吸气时圆圈变大，呼气时缩小。每天 3 分钟，能明显帮助平复情绪。</div>
+      <div id="pat-list" style="margin-top:12px"></div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="stage"><div class="ring" id="breath-circle"><div><div class="in" id="breath-phase">准备开始</div><div class="cnt" id="breath-rounds">已完成 0 轮</div></div></div></div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:18px"><button class="pill-btn" id="breath-start">开始 ▶</button></div>
+      <div class="hint" style="margin-top:12px">💡 中途被打断也没关系，随时点开始重新来。</div>
+    </div>
+  </section>
+
+  <!-- 心理资源 -->
+  <section class="view" id="v-res">
+    <div class="card"><div class="quote"><span class="q-mark">“</span><span id="res-quote"></span><span class="q-mark">”</span></div></div>
+    <div class="card">
+      <h3>📞 需要时，请一定求助</h3>
+      <div id="res-hotlines"></div>
+      <div class="hint">⚠️ 心灵驿站是同学间的互助平台，<b>无法替代专业帮助</b>。当你有伤害自己或他人的念头，请立即拨打上面的电话，或告诉信任的人。你值得被帮助。</div>
+    </div>
+    <div class="card">
+      <h3>🌿 自助小贴士</h3>
+      <details class="help"><summary>焦虑袭来时，可以做什么？</summary><div class="b">1. 先离开让你焦虑的现场，喝一杯温水；2. 做 4-7-8 呼吸（吸气4秒-屏息7秒-呼气8秒），重复 4 轮；3. 把担心的事写下来，分三栏：能改变的 / 不能改变的 / 需要求助的；4. 只处理"能改变"的第一小步。</div></details>
+      <details class="help"><summary>睡不着的时候</summary><div class="b">睡前 1 小时远离屏幕；房间调暗调凉；用"478呼吸法"放松；躺 20 分钟还清醒就起床做点安静的事（比如读纸质书），困了再回去躺，不要和床"较劲"。</div></details>
+      <details class="help"><summary>情绪低落、不想说话</summary><div class="b">接纳"我现在就是很低落"，不责备自己；给信任的人发一句话（哪怕只是"我不太好"）；保证最低限度的吃饭、喝水、出门晒太阳；低落持续超两周并影响生活，请去学校心理咨询中心或医院心理科看看。</div></details>
+      <details class="help"><summary>如何陪伴正在难过的同学</summary><div class="b">多用"我听见了""我陪你"，少说"这有什么大不了的"；不急着给建议，先让情绪被看见；如果对方提到自伤自杀，请立即告知心理委员/辅导员并陪伴拨打求助热线，绝不替他保密。</div></details>
+    </div>
+  </section>
+
+  <!-- 我的 / 设置 -->
+  <section class="view" id="v-settings">
+    <div class="card">
+      <h3>🪪 我的匿名身份</h3>
+      <div style="display:flex;gap:14px;align-items:center">
+        <div class="big-ava" id="set-avatar">😊</div>
+        <div style="flex:1;min-width:0">
+          <div id="set-nick" style="font-weight:800;font-size:16px">—</div>
+          <div style="margin-top:3px;display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+            <span class="id-chip" id="set-id">······</span>
+            <button class="mini-btn" id="btn-copy-id">复制</button>
+          </div>
+        </div>
+      </div>
+      <hr class="hr">
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <button class="ghost-btn" id="btn-change-ava">换头像</button>
+        <button class="ghost-btn" id="btn-change-nick">改昵称</button>
+        <button class="ghost-btn" id="btn-regen">🔄 重新匿名（换新ID）</button>
+      </div>
+      <div class="hint" style="margin-top:10px">想换手机/电脑后仍是同一个人？点下方「我的身份码」生成一串码并妥善保存；换设备时用「身份码恢复」粘贴即可找回<b>网名+匿名ID</b>。</div>
+      <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">
+        <button class="ghost-btn" id="btn-ident-code">📇 我的身份码</button>
+        <button class="ghost-btn" id="btn-ident-restore">📥 身份码恢复</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>☁️ 云端（Supabase）</h3>
+      <div class="kv"><span>连接状态</span><b id="cloud-state">检测中…</b></div>
+      <div class="hint" style="margin-top:8px">消息/好友申请/图片视频存放在你的 Supabase 项目（新加坡区免费额度）里，对方随时打开网页即可取信。数据按班级互信小圈子使用；重要内容请定期「导出完整备份」。</div>
+      <div style="display:flex;gap:7px;margin-top:10px;flex-wrap:wrap">
+        <button class="ghost-btn" id="btn-cloud-config">重新填写密钥</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>💾 聊天记录与本机数据</h3>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <button class="pill-btn" id="btn-exp-json">⬇️ 导出完整备份</button>
+        <button class="ghost-btn" id="btn-exp-txt">📄 导出聊天记录(TXT)</button>
+        <button class="ghost-btn" id="btn-import">⬆️ 导入备份</button>
+        <input type="file" id="f-import" accept=".json,application/json" hidden>
+      </div>
+      <hr class="hr">
+      <div class="kv"><span>本机缓存占用</span><b id="storage-txt">0 KB</b></div>
+      <div class="meter" style="margin:8px 0 2px"><i id="storage-fill" style="width:0%"></i></div>
+      <div class="hint">图片/视频建议 ≤3MB / ≤8MB；旧数据可去 Supabase 控制台 Table Editor 清理。</div>
+      <hr class="hr">
+      <button class="danger-btn" id="btn-clear" style="width:100%">🗑️ 清空本机缓存（云端数据不受影响）</button>
+    </div>
+    <div class="card">
+      <h3>🔒 隐私与匿名须知</h3>
+      <div class="step-line"><b>•</b>匿名：无账号无真名；匿名ID用于同学互加。</div>
+      <div class="step-line"><b>•</b>聊天内容存于你的 Supabase 项目（明文，anon 密钥在网页中可见），适合互信小圈子，非高敏感隐私场景。可在控制台删除数据。</div>
+      <div class="step-line"><b>•</b>想换身份？点「重新匿名」生成新 ID（云端旧内容保留在原ID名下）。</div>
+      <div class="step-line"><b>•</b>紧急情况永远优先求助专业人员，而不是只依赖本平台。</div>
+    </div>
+  </section>
+</div>
+
+<!-- 聊天视图 -->
+<div class="app" id="chat-wrap" hidden>
+  <div class="chat-topbar">
+    <button class="back-btn" id="chat-back">←</button>
+    <div class="big-ava" id="chat-ava" style="width:42px;height:42px;font-size:22px;border-radius:12px;display:grid;place-items:center;background:var(--card2);border:1px solid var(--line)"></div>
+    <div style="flex:1;min-width:0">
+      <div id="chat-title" style="font-weight:800;font-size:15px"></div>
+      <div id="chat-status" style="font-size:11.5px;color:var(--muted)"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:8px;padding:14px 12px">
+    <div class="msg-list" id="chat-msgs"></div>
+  </div>
+</div>
+
+<!-- 底部输入区 -->
+<div class="composer" id="composer-lobby">
+  <div class="inner">
+    <button class="attach-btn" id="btn-lb-emoji" title="表情">🙂</button>
+    <textarea id="lb-input" rows="1" placeholder="写点留言……（Enter 发送，Shift+Enter 换行）"></textarea>
+    <button class="attach-btn" id="btn-lb-img" title="发送图片">🖼️</button>
+    <button class="attach-btn" id="btn-lb-video" title="发送视频">🎬</button>
+    <button class="send-btn" id="lb-send">发送</button>
+  </div>
+  <div class="emoji-tray" id="emoji-lobby"></div>
+</div>
+<div class="composer" id="composer-chat" hidden>
+  <div class="inner">
+    <button class="attach-btn" id="btn-ch-emoji" title="表情">🙂</button>
+    <textarea id="ch-input" rows="1" placeholder="留言给好友……（Enter 发送）"></textarea>
+    <button class="attach-btn" id="btn-ch-img" title="发送图片">🖼️</button>
+    <button class="attach-btn" id="btn-ch-video" title="发送视频">🎬</button>
+    <button class="send-btn" id="ch-send">发送</button>
+  </div>
+  <div class="emoji-tray" id="emoji-chat"></div>
+</div>
+
+<input type="file" id="f-input" accept="image/*,video/*" hidden>
+
+<div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLightbox()">
+  <button class="lb-x" onclick="closeLightbox()">✕</button>
+  <img id="lb-img" alt="">
+</div>
+
+<div class="overlay hidden" id="m-avatar">
+  <div class="card ob-card">
+    <div class="ob-step-title">选择新头像</div>
+    <div class="avatar-grid" id="avatar-grid2"></div>
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <button class="pill-btn" id="btn-ava-ok" style="flex:1;justify-content:center">确定</button>
+      <button class="ghost-btn" id="btn-ava-cancel" style="flex:1">取消</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+<div class="footer-note">🌊 心灵驿站 · 匿名心理互助平台 —— 由本班心理委员维护<br>Supabase 免费云端信箱版 · 无需双方同时在线 · 记得定期导出备份</div>
+
+<script>
+"use strict";
+/* ================================================================
+   心灵驿站 · 匿名心理互助平台（Supabase 免费云端信箱版）
+   原理：非实时"留言信箱"——消息作为数据行写入你的 Supabase（PostgREST），
+   收信方打开页面时按时间游标增量取信；无需双方同时在线、无需服务器、永久免费额度。
+   依赖：注册 supabase.com（新加坡区）→ 执行 supabase.sql → 填入 Project URL + anon key。
+================================================================ */
+
+/* ============ 工具 ============ */
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function genUid(){ let s=""; for(let i=0;i<9;i++) s+=CHARS[Math.floor(Math.random()*CHARS.length)]; return "A"+s; }
+function genSecret(){ const c="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; let s=""; for(let i=0;i<24;i++) s+=c[Math.floor(Math.random()*c.length)]; return s; }
+/* 身份码：编码 id+secret+昵称+头像，用于跨设备恢复同一身份 */
+function identCodeEncode(){
+  if (!S.me) return "";
+  const raw = JSON.stringify({ id: S.me.id, secret: S.me.secret || "", nick: S.me.nick, emoji: S.me.emoji });
+  return "XL1:" + btoa(unescape(encodeURIComponent(raw)));
+}
+function identCodeDecode(codeStr){
+  try {
+    const t = String(codeStr || "").trim();
+    if (!t || t.indexOf("XL1:") !== 0) return null;
+    const raw = decodeURIComponent(escape(atob(t.slice(4))));
+    const o = JSON.parse(raw);
+    if (o && o.id && o.secret) return o;
+  } catch(e){}
+  return null;
+}
+const pad = (n) => String(n).padStart(2,"0");
+const fmtClock = (ts) => { const d=new Date(ts); return pad(d.getHours())+":"+pad(d.getMinutes()); };
+const dayStr = (ts) => { const d=new Date(ts); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); };
+function fmtDay(ts){ const t=new Date(ts),now=new Date(); const same=(a,b)=>a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); if(same(t,now))return"今天 "+fmtClock(ts); const y=new Date(now); y.setDate(y.getDate()-1); if(same(t,y))return"昨天 "+fmtClock(ts); return (t.getMonth()+1)+"月"+t.getDate()+"日 "+fmtClock(ts); }
+function dayLabel(ts){ const t=new Date(ts),now=new Date(); const same=(a,b)=>a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); if(same(t,now))return"今天"; const y=new Date(now); y.setDate(y.getDate()-1); if(same(t,y))return"昨天"; return (t.getMonth()+1)+"月"+t.getDate()+"日"; }
+function toast(msg,type){ const box=document.createElement("div"); box.className="toast"+(type?" "+type:""); box.textContent=msg; $("toasts").appendChild(box); setTimeout(()=>{ box.style.opacity="0"; box.style.transition="opacity .3s"; setTimeout(()=>box.remove(),300); },3200); }
+const mem={};
+function lsGet(k,fb){ try{ const raw=localStorage.getItem("xlh."+k); if(raw!=null) return JSON.parse(raw); }catch(e){} return (k in mem)?mem[k]:fb; }
+function lsSet(k,v){ mem[k]=v; try{ localStorage.setItem("xlh."+k,JSON.stringify(v)); return true; }catch(e){ toast("⚠️ 本机存储空间不足","warn"); return false; } }
+function lsDel(k){ try{ localStorage.removeItem("xlh."+k); }catch(e){} }
+
+/* ============ 状态 ============ */
+const AVATARS=["😊","🙂","😄","🥰","😎","🤗","😌","🤔","🥹","😢","😭","😤","😴","🤯","🥺","😳","🤪","😇","🧐","🤫","💪","🌟","🌸","🍀","🐳","🦋","🐰","🐻","🐱","🐶","🌙","🌈"];
+const S = {
+  me: null,
+  lobby: [],
+  cur: { lobby: 0, dm: {} },
+  friends: {},        // id -> {nick,emoji,addedAt}
+  convs: {},          // peerId -> [msgs]
+  reqIn: [],
+  unread: {},
+  moods: {},
+  selMood: 0,
+  peer: null,
+  fileCtx: "lobby",
+  pickingAva: null,
+  breathToken: 0,
+  breathRun: false,
+  online: false,
+  syncing: false,
+  lastSync: 0,
+  lastErr: "",
+};
+const P = {};
+let hbTimer = null;
+/* 默认云端配置：公开密钥，随页面一并分发，同学打开即用无需填写。
+   如需连接你另外创建的项目，可在「我的 → 云端」里覆盖保存。 */
+const DEFAULT_CFG = { url: "https://ebwlsfriwfhrcaiycnnn.supabase.co", key: "sb_publishable_Et9qxMMKeiv2rwrGwCmLOg_mQzqOF1n" };
+let CFG = null;
+
+function saveLobby(){ lsSet("lobby",S.lobby); }
+function saveCursors(){ lsSet("cursor",S.cur); }
+function saveFriends(){ lsSet("friends",S.friends); }
+function saveConvs(){ lsSet("convs",S.convs); }
+function saveReqs(){ lsSet("reqIn",S.reqIn); }
+function saveUnread(){ lsSet("unread",S.unread); }
+function saveMoods(){ lsSet("moods",S.moods); }
+function saveMe(){ lsSet("me",S.me); }
+function loadCfg(){ const s = lsGet("supa", null); CFG = (s && s.url && s.key) ? { url:s.url, key:s.key } : { url: DEFAULT_CFG.url, key: DEFAULT_CFG.key }; }
+function saveCfg(){ if(CFG) lsSet("supa",CFG); }
+function clearCfg(){ CFG = { url: DEFAULT_CFG.url, key: DEFAULT_CFG.key }; lsDel("supa"); }
+function outbox(){ return lsGet("outbox",[]); }
+function saveOutbox(list){ lsSet("outbox",list); }
+
+/* ============ Supabase（PostgREST + Storage）客户端 ============ */
+function base(){ return (CFG.url||"").replace(/\/+$/,""); }
+function authH(){
+  return { apikey: CFG.key, Authorization: "Bearer "+CFG.key };
+}
+async function sb(path, opts){
+  const h = Object.assign({}, authH());
+  if (opts && opts.json){ h["Content-Type"]="application/json"; }
+  let r;
+  try { r = await fetch(base()+path, { method: (opts&&opts.method)||"GET", headers: h, body: opts&&opts.body!==undefined?opts.body:undefined }); }
+  catch(e){ throw new Error("网络不可用（无法访问 Supabase，国内网络可能需多次重试）"); }
+  let j = null;
+  try { j = await r.json(); } catch(e){}
+  if (!r.ok){
+    const em = (j && (j.message||j.error||j.hint)) ? String(j.message||j.error||j.hint) : ("HTTP "+r.status);
+    const ex = new Error(em); ex.code = String((j&&j.code)||r.status); throw ex;
+  }
+  return j;
+}
+/* 表名 */
+const T = { msg:"msgs", profile:"profiles", req:"friend_reqs", f:"friendships" };
+function qp(obj){
+  const parts = [];
+  for (const k in obj){ const v = obj[k]; if (v !== undefined && v !== null) parts.push(k + "=" + encodeURIComponent(v)); }
+  return parts.length ? ("?" + parts.join("&")) : "";
+}
+function listAll(table, filters, order, limit){
+  const f = Object.assign({ select:"*" }, filters||{});
+  if (order) f.order = order;
+  if (limit) f.limit = String(limit);
+  return sb("/rest/v1/" + table + qp(f)).then(j => j||[]);
+}
+function insertRow(table, obj){
+  return sb("/rest/v1/" + table, { method:"POST", json:true, body: JSON.stringify(obj) });
+}
+function updateRow(table, filters, obj){
+  return sb("/rest/v1/" + table + qp(filters), { method:"PATCH", json:true, body: JSON.stringify(obj) });
+}
+function deleteRows(table, filters){
+  return sb("/rest/v1/" + table + qp(filters), { method:"DELETE" });
+}
+async function uploadFile(file, name){
+  const url = base() + "/storage/v1/object/media/" + encodeURIComponent(name);
+  const h = Object.assign({}, authH());
+  h["Content-Type"] = file.type || "application/octet-stream";
+  let r;
+  try { r = await fetch(url, { method:"POST", headers:h, body: file }); } catch(e){ throw new Error("文件上传网络错误"); }
+  let j = null;
+  try { j = await r.json(); } catch(e){}
+  if (!r.ok) throw new Error((j&&(j.message||j.error))?String(j.message||j.error):("上传失败 HTTP "+r.status));
+  return base() + "/storage/v1/object/public/media/" + encodeURIComponent(name);
+}
+
+/* ============ 视图 ============ */
+let curView = "lobby";
+function isView(v){ return curView === v; }
+function showView(name){
+  curView = name;
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("on"));
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.view === name));
+  const wrap=$("chat-wrap"), cl=$("composer-lobby"), cc=$("composer-chat");
+  cl.hidden = true; cc.hidden = true;
+  if (name === "chat" && S.peer && S.friends[S.peer]){
+    wrap.hidden = false; cc.hidden = false;
+    S.unread[S.peer] = 0; saveUnread();
+    renderChat();
+    if (S.online) syncDm(S.peer).then(()=>renderChat());
+  } else if (name === "chat"){ S.peer = null; }
+  if (wrap.hidden === false && name !== "chat") wrap.hidden = true;
+  if (name === "lobby"){ $("v-lobby").classList.add("on"); cl.hidden = false; renderLobby(); if (S.online) syncLobby(); }
+  else if (name === "friends"){ $("v-friends").classList.add("on"); renderFriends(); if (S.online) syncFriends(); }
+  else if (name === "mood"){ $("v-mood").classList.add("on"); renderMood(); }
+  else if (name === "relax"){ $("v-relax").classList.add("on"); }
+  else if (name === "res"){ $("v-res").classList.add("on"); pickQuote(); }
+  else if (name === "settings"){ $("v-settings").classList.add("on"); renderSettings(); }
+  if (name !== "chat") S.fileCtx = "lobby";
+  renderNav();
+  closeLightbox();
+}
+function renderNav(){
+  document.querySelectorAll(".tab .badge").forEach(b => b.remove());
+  let n = 0;
+  for (const k in S.unread) n += S.unread[k];
+  n += S.reqIn.length;
+  if (n > 0){ const t=document.querySelector('.tab[data-view="friends"]'); const sp=document.createElement("span"); sp.className="badge"; sp.textContent=n>99?"99+":n; t.appendChild(sp); }
+}
+function setPill(state, txt){
+  const p=$("cloud-pill");
+  p.classList.toggle("on", state==="on");
+  p.classList.toggle("off", state==="off");
+  $("cloud-pill-txt").textContent = txt;
+}
+function banner(){
+  const w=$("cloud-banner-wrap");
+  if (S.online){ w.innerHTML=""; return; }
+  let detail="";
+  if (S.lastErr) detail='<div style="margin-top:4px;font-size:12px">提示：' + esc(S.lastErr) + '</div>';
+  const msg = !S.me ? "" : "云端未连接：本页面已内置连接配置，稍等会自动重试；若持续失败，可能网络暂时不通，或需到「我的 → 云端」检查配置是否被改过。" + (curView==="lobby"?"":"（未连接时发送内容会先存本机，连接后自动补发）");
+  w.innerHTML='<div class="cloud-banner"><span>'+msg+detail+'</span><button class="mini-btn ok" id="banner-cfg">重试连接</button></div>';
+  const b=$("banner-cfg");
+  if (b) b.onclick=()=>checkOnline(true);
+}
+
+/* ============ 连接 / 心跳 ============ */
+let checkingOnline=false;
+function openSetup(){
+  const m=$("m-setup");
+  m.classList.remove("hidden");
+  if (CFG){ $("cfg-url").value=CFG.url||""; $("cfg-key").value=CFG.key||""; }
+  $("cfg-msg").innerHTML="";
+}
+function closeSetup(){ $("m-setup").classList.add("hidden"); }
+async function saveSetup(){
+  const url=$("cfg-url").value.trim();
+  const key=$("cfg-key").value.trim();
+  const msgEl=$("cfg-msg");
+  msgEl.innerHTML="";
+  if(!url||!key){ msgEl.innerHTML='<span style="color:var(--danger)">⚠️ 两项都需要填写</span>'; return; }
+  CFG={ url, key };
+  saveCfg();
+  closeSetup();
+  toast("正在连接云端…");
+  await checkOnline(true);
+}
+async function checkOnline(force){
+  if (!S.me) return;
+  if (!CFG){ setPill("off","未配置"); banner(); return; }
+  if (checkingOnline && !force) return;
+  checkingOnline = true;
+  setPill("off","连接中…");
+  try {
+    await listAll(T.msg, { scope: "eq.lobby" }, null, 1);   // 连通性+表+权限检查
+    if (!S.online){ S.online = true; setPill("on","在线"); banner(); toast("☁️ 云端连接成功","ok"); }
+    S.online = true;
+    S.lastErr = "";
+    await ensureProfileRow();
+    startHb();
+    await flushOutbox();
+    const v = curView;
+    if (v === "lobby") await syncLobby();
+    else if (v === "friends") await syncFriends();
+    else if (v === "chat" && S.peer) await syncDm(S.peer);
+    renderNav(); banner();
+  } catch(e){
+    S.lastErr = (e && e.message) ? e.message : String(e);
+    if (S.online){ S.online=false; setPill("off","未连接"); banner(); }
+    else { setPill("off","未连接"); banner(); }
+  } finally { checkingOnline = false; }
+}
+function startHb(){
+  if (hbTimer) return;
+  hbTimer = setInterval(() => {
+    if (document.visibilityState === "visible" && S.online && S.me) hb().catch(()=>{});
+  }, 20000);
+}
+async function hb(){ if (S.online && S.me) await ensureProfileRow(true); }
+async function ensureProfileRow(onlyBeat){
+  if (!S.me) return;
+  if (!S.me.secret){ S.me.secret = genSecret(); saveMe(); }
+  const rows = await listAll(T.profile, { id: "eq." + S.me.id }, null, 1);
+  const base = { nick: S.me.nick, emoji: S.me.emoji, last: Date.now() };
+  if (rows.length){
+    const row = rows[0];
+    if (row.secret && S.me.secret && row.secret !== S.me.secret){
+      const ex = new Error("该匿名ID已被另一个身份码绑定。如确属你本人，请粘贴你自己的身份码（我的→📇身份码→📥身份码恢复）。");
+      ex.code = "conflict"; throw ex;
+    }
+    const obj = Object.assign({}, base, { secret: S.me.secret });
+    try { await updateRow(T.profile, { id: "eq." + S.me.id }, obj); }
+    catch(e){ // 数据库尚未加 secret 列时的兼容
+      if (String((e&&e.message)||"").indexOf("column") >= 0) await updateRow(T.profile, { id: "eq." + S.me.id }, base);
+      else throw e;
+    }
+  } else if (!onlyBeat){
+    try {
+      await insertRow(T.profile, Object.assign({ id: S.me.id, secret: S.me.secret }, base));
+    } catch(e){
+      if (String((e&&e.message)||"").indexOf("column") >= 0) await insertRow(T.profile, Object.assign({ id: S.me.id }, base));
+      else throw e;
+    }
+  }
+}
+
+/* ============ 同步 ============ */
+function setSyncBusy(on){
+  const ind=$("sync-ind"), tip=$("sync-tip");
+  if(!ind||!tip) return;
+  if(on){ ind.style.background="var(--warn)"; tip.textContent="正在同步…"; }
+  else { ind.style.background="var(--ok)"; tip.textContent="上次同步 "+(S.lastSync?fmtClock(S.lastSync):"—"); }
+}
+async function doSyncOnce(){
+  if (!S.online || S.syncing || !S.me) return;
+  S.syncing=true; setSyncBusy(true);
+  try {
+    const v=curView;
+    if (v==="lobby") await syncLobby();
+    else if (v==="friends") await syncFriends();
+    else if (v==="chat" && S.peer) await syncDm(S.peer);
+    if ((v==="lobby"||v==="friends") && (Date.now()-(S.lastDmAll||0))>25000){
+      S.lastDmAll=Date.now();
+      for (const id of Object.keys(S.friends)){ try{ await syncDm(id); }catch(e){} }
+    }
+    S.lastSync=Date.now(); setSyncBusy(false);
+  } catch(e){
+    S.online=false; S.lastErr=(e&&e.message)?e.message:String(e);
+    setPill("off","未连接"); banner(); setSyncBusy(false);
+  } finally { S.syncing=false; }
+}
+async function syncLobby(){
+  const rows = await listAll(T.msg, { scope:"eq.lobby", ts:"gt." + (S.cur.lobby||0) }, "ts.asc", 200);
+  const fresh = rows.map(rowToMsg);
+  mergeMsgs(S.lobby, fresh);
+  if (fresh.length){ S.lobby.sort((a,b)=>a.ts-b.ts); if (S.lobby.length>800) S.lobby=S.lobby.slice(-800); saveLobby(); S.cur.lobby = Math.max(S.cur.lobby||0, ...fresh.map(m=>m.ts)); saveCursors(); }
+  await pullPresence();
+  if (!S.lobby.some(m=>m.from==="SYS")) seedWelcome();
+  renderLobby();
+  await flushOutbox();
+}
+async function syncFriends(){
+  const reqRows = await listAll(T.req, { to_id: "eq." + S.me.id }, "ts.desc", 100);
+  const seen = [];
+  reqRows.forEach(r => {
+    seen.push(r.from_id);
+    if (!S.reqIn.some(x=>x.id===r.from_id)) S.reqIn.push({ id:r.from_id, nick:r.from_nick, emoji:r.from_emoji, rowId:r.id, ts:r.ts||Date.now() });
+  });
+  S.reqIn = S.reqIn.filter(x => seen.indexOf(x.id) >= 0);
+  saveReqs();
+  const fRows = await listAll(T.f, { or: "(a.eq." + S.me.id + ",b.eq." + S.me.id + ")" }, null, 300);
+  const cloudIds = {};
+  fRows.forEach(f => {
+    const peer = f.a === S.me.id ? f.b : f.a;
+    if (!peer || peer === S.me.id) return;
+    cloudIds[peer] = true;
+    const peerP = f.a === S.me.id ? { nick:f.b_nick, emoji:f.b_emoji } : { nick:f.a_nick, emoji:f.a_emoji };
+    if (!S.friends[peer]) S.friends[peer] = { nick: peerP.nick||peer, emoji: peerP.emoji||"🙂", addedAt: f.ts||Date.now() };
+    else if (peerP){ S.friends[peer].nick = peerP.nick||S.friends[peer].nick; S.friends[peer].emoji = peerP.emoji||S.friends[peer].emoji; }
+  });
+  Object.keys(S.friends).forEach(id => { if (id !== S.me.id && !cloudIds[id]) delete S.friends[id]; });
+  saveFriends();
+  await pullPresence();
+  if (isView("friends")) renderFriends();
+  renderNav();
+  await flushOutbox();
+}
+async function syncDm(peerId){
+  if (!peerId || !S.friends[peerId]) return;
+  const cursor = S.cur.dm[peerId] || 0;
+  const rows = await listAll(T.msg, { scope:"eq.dm", pair:"eq." + pairOf(S.me.id, peerId), ts:"gt." + cursor }, "ts.asc", 200);
+  const fresh = rows.map(rowToMsg);
+  const arr = S.convs[peerId] || [];
+  let newCount = 0;
+  fresh.forEach(m => { if (m && m.id && !arr.some(x=>x.id===m.id)){ arr.push(m); if (m.from !== S.me.id) newCount++; } });
+  if (fresh.length){ arr.sort((a,b)=>a.ts-b.ts); if (arr.length>1000) arr.splice(0,arr.length-1000); S.convs[peerId]=arr; saveConvs(); S.cur.dm[peerId]=Math.max(cursor, ...fresh.map(m=>m.ts)); saveCursors(); }
+  if (newCount>0 && !(isView("chat") && S.peer===peerId)){
+    S.unread[peerId]=(S.unread[peerId]||0)+newCount;
+    saveUnread(); renderNav();
+    if (document.hidden) document.title = "💬 新留言 · 心灵驿站";
+    const f=S.friends[peerId];
+    toast((f?f.emoji+" "+f.nick:"好友")+" 给你留了消息");
+  }
+  if (isView("chat") && S.peer===peerId) renderChat();
+}
+async function pullPresence(){
+  try {
+    const nowT = Date.now();
+    const rows = await listAll(T.profile, { last:"gt." + (nowT-80*1000) }, "last.desc", 200);
+    rows.forEach(u => { if (u.id && u.id !== S.me.id) P[u.id] = { id:u.id, nick:u.nick, emoji:u.emoji, last:u.last }; });
+    for (const k in P){ if (nowT - P[k].last > 80*1000) delete P[k]; }
+    renderPresence();
+  } catch(e){}
+}
+function mergeMsgs(list, fresh){
+  fresh.forEach(m => { if (m && m.id && !list.some(x=>x.id===m.id)) list.push(m); });
+}
+function rowToMsg(r){
+  return { id: r.mid || String(r.ts), from: r.sender, nick: r.nick, emoji: r.emoji, ts: r.ts || Date.now(), kind: r.kind || "text", text: r.content || "", src: r.src || "" };
+}
+function pairOf(a,b){ return [a,b].sort().join("~"); }
+
+/* ============ 待发队列 ============ */
+async function flushOutbox(){
+  const list = outbox();
+  if (!list.length) return;
+  const rest = [];
+  let needRender = false;
+  for (const item of list){
+    try {
+      if (item.scope === "lobby") await putMsg("lobby", null, item.msg);
+      else await putMsg("dm", item.to, item.msg);
+      item.msg.sending = false; needRender = true;
+    } catch(e){
+      if (item.msg) item.msg.sending = false;
+      const em = String((e&&e.message)||e);
+      if (em.indexOf("insert") < 0 && em.indexOf("permission") < 0 && em.indexOf("network") < 0) rest.push(item);
+    }
+  }
+  saveOutbox(rest);
+  if (needRender){ renderLobby(); if (isView("chat") && S.peer) renderChat(); }
+}
+async function putMsg(scope, to, msg){
+  const dup = await listAll(T.msg, { mid: "eq." + msg.id }, null, 1);
+  if (dup.length) return;
+  const obj = {
+    scope, mid: msg.id, sender: msg.from, nick: msg.nick, emoji: msg.emoji,
+    ts: msg.ts, kind: msg.kind, content: msg.text || "", src: msg.src || "",
+  };
+  if (scope === "dm" && to) obj.pair = pairOf(S.me.id, to);
+  await insertRow(T.msg, obj);
+}
+
+/* ============ 发送 ============ */
+function isSelf(m){ return m && m.from === (S.me && S.me.id); }
+function enqueueAndSend(scope, to, msg){
+  msg.sending = true;
+  if (scope === "lobby"){
+    S.lobby.push(msg); if (S.lobby.length>800) S.lobby=S.lobby.slice(-800); saveLobby();
+    if (isView("lobby")) appendMsgInto($("lobby-msgs"), msg);
+  } else {
+    const arr = S.convs[to] || []; arr.push(msg);
+    if (arr.length>1000) arr.splice(0,arr.length-1000);
+    S.convs[to] = arr; saveConvs();
+    if (isView("chat") && S.peer===to) appendMsgInto($("chat-msgs"), msg);
+  }
+  const list = outbox();
+  if (scope === "lobby") list.push({ scope, msg });
+  else list.push({ scope, to, msg });
+  saveOutbox(list);
+  if (S.online) flushOutbox().catch(()=>{});
+  else toast("云端未连接，已存本机，连接后自动补发","warn");
+  caringLocal(scope, msg.text || "");
+}
+function msgBody(kind, file, url){
+  return { id: Date.now().toString(36).padStart(13,"0")+"_"+Math.random().toString(36).slice(2,6), from:S.me.id, nick:S.me.nick, emoji:S.me.emoji, ts:Date.now(), kind, text: kind==="text" ? file : "", src: url || "" };
+}
+function sendText(scope){
+  const ta = scope==="lobby"?$("lb-input"):$("ch-input");
+  const text=(ta.value||"").trim();
+  if(!text) return;
+  if(scope!=="lobby" && !S.friends[scope]){ toast("你们不是好友，无法留言","warn"); return; }
+  ta.value=""; ta.style.height="auto";
+  enqueueAndSend(scope, scope!=="lobby"?scope:null, msgBody("text", text, ""));
+}
+function sendMedia(scope, file){
+  if(!file) return;
+  if(scope!=="lobby" && !S.friends[scope]){ toast("请先和对方成为好友","warn"); return; }
+  if(file.type.startsWith("image/") && file.size>3*1024*1024){ toast("图片超过 3MB，请压缩后再发","warn"); return; }
+  if(file.type.startsWith("video/") && file.size>8*1024*1024){ toast("视频超过 8MB，请截短后再发","warn"); return; }
+  if(!file.type.startsWith("image/") && !file.type.startsWith("video/")){ toast("仅支持图片或视频","warn"); return; }
+  toast("正在上传到云端…");
+  const name = Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8) + (file.type.startsWith("image/")?(".jpg"):(".mp4"));
+  uploadFile(file, name).then(url=>{
+    enqueueAndSend(scope, scope!=="lobby"?scope:null, msgBody(file.type.startsWith("image/")?"image":"video", "", url));
+    toast("已发送 ✅","ok");
+  }).catch(e=>{
+    toast("上传失败："+(e&&e.message?e.message:e),"warn");
+  });
+}
+function removeMsgLocal(mid, ctx){
+  if(ctx==="dm"){
+    if(!S.peer) return;
+    const arr=S.convs[S.peer]; if(!arr) return;
+    const i=arr.findIndex(x=>x.id===mid); if(i<0) return;
+    arr.splice(i,1); saveConvs(); if(isView("chat")) renderChat();
+  } else {
+    const i=S.lobby.findIndex(x=>x.id===mid); if(i<0) return;
+    S.lobby.splice(i,1); saveLobby(); renderLobby();
+  }
+}
+function caringLocal(scope, text){
+  const CARING=[
+    {k:["自杀","不想活","去死","自残","割腕","结束生命"],tip:"我看到你提到了很沉重的词语。如果此刻你正在伤害自己或想伤害自己，请立即拨打 12356（全国心理援助热线）或 110，也可以私信你的心理委员。你不需要独自扛着。"},
+    {k:["好累","撑不下去","受不了","崩溃","撑不住"],tip:"辛苦了。感到撑不下去时，可以先停下做个深呼吸（试试顶部的「放松练习」），再把这些话告诉一个信任的人。你不是一个人在扛。"}
+  ];
+  const low=(text||"").toLowerCase();
+  for(const c of CARING){
+    if(c.k.some(w=>low.includes(w))){
+      const key="caring."+(scope==="lobby"?"lobby":scope)+"."+dayStr(Date.now())+"."+c.k[0];
+      if(!lsGet(key,false)){
+        lsSet(key,true);
+        setTimeout(()=>{
+          const m={ id:"sys-"+Date.now().toString(36), from:"SYS", nick:"驿站小助手", emoji:"🌿", ts:Date.now(), kind:"text", text:"🌸 "+c.tip, sys:true };
+          if(scope==="lobby"){ S.lobby.push(m); saveLobby(); if(isView("lobby")) appendMsgInto($("lobby-msgs"),m); }
+          else { const arr=S.convs[scope]||[]; arr.push(m); S.convs[scope]=arr; saveConvs(); if(isView("chat")&&S.peer===scope) appendMsgInto($("chat-msgs"),m); }
+        },900);
+      }
+      break;
+    }
+  }
+}
+
+/* ============ 渲染 ============ */
+function sysEl(m){
+  const d=document.createElement("div");
+  d.className="sys-card";
+  d.innerHTML="<span class='tt'>"+esc(m.emoji||"🌿")+" "+esc(m.nick||"驿站小助手")+"</span><span>"+esc(m.text||"")+"</span>";
+  return d;
+}
+function msgEl(m, ctx){
+  const mine=isSelf(m);
+  if(m.from==="SYS") return sysEl(m);
+  const row=document.createElement("div");
+  row.className="msg"+(mine?" me":"");
+  const ava=document.createElement("div"); ava.className="ava"; ava.textContent=m.emoji||"🙂";
+  const body=document.createElement("div"); body.className="m-body";
+  const meta=document.createElement("div"); meta.className="m-meta";
+  const nick=document.createElement("span"); nick.className="m-nick"; nick.textContent=m.nick||""; nick.style.color=nickColor(m.from);
+  const time=document.createElement("span"); time.className="m-time"; time.textContent=fmtClock(m.ts);
+  meta.appendChild(nick); meta.appendChild(time);
+  body.appendChild(meta);
+  const bub=document.createElement("span"); bub.className="bubble";
+  if(m.kind==="text"){ bub.textContent=m.text||""; }
+  else if(m.kind==="image"){
+    const wrap=document.createElement("span"); wrap.className="attach";
+    const img=document.createElement("img"); img.src=m.src; img.alt="图片"; img.loading="lazy";
+    img.onclick=()=>openLightbox(m.src);
+    wrap.appendChild(img); bub.appendChild(wrap);
+  }
+  else if(m.kind==="video"){
+    const wrap=document.createElement("span"); wrap.className="attach";
+    const v=document.createElement("video"); v.src=m.src; v.controls=true; v.preload="metadata";
+    wrap.appendChild(v); bub.appendChild(wrap);
+  }
+  else { bub.textContent="[留言]"; }
+  body.appendChild(bub);
+  if(mine){
+    const st=document.createElement("div"); st.className="st";
+    st.textContent=m.sending?"● 上传中…":"已入云端";
+    body.appendChild(st);
+    const del=document.createElement("button"); del.className="del-btn"; del.textContent="删除";
+    del.title="仅从本机记录删除（云端保留）";
+    del.onclick=()=>removeMsgLocal(m.id, ctx);
+    body.appendChild(del);
+  }
+  row.appendChild(ava); row.appendChild(body);
+  return row;
+}
+function nickColor(id){ let h=0; for(let i=0;i<id.length;i++) h=(h*31+id.charCodeAt(i))%360; return "hsl("+h+",62%,52%)"; }
+function renderMsgs(container, arr, ctx){
+  container.innerHTML="";
+  let lastDay="";
+  arr.forEach(m=>{
+    const key=dayStr(m.ts);
+    if(key!==lastDay){ const d=document.createElement("div"); d.className="day-divider"; d.textContent=dayLabel(m.ts); d.dataset.day=key; container.appendChild(d); lastDay=key; }
+    const el=msgEl(m,ctx); el.dataset.day=key; container.appendChild(el);
+  });
+  container.scrollTop=container.scrollHeight;
+}
+function nearBottom(c){ return c.scrollHeight-c.scrollTop-c.clientHeight<160; }
+function appendMsgInto(container, m){
+  const ctx=container===$("chat-msgs")?"dm":"lobby";
+  const els=container.children;
+  const lastMsg=els.length?els[els.length-1]:null;
+  const key=dayStr(m.ts);
+  if(!lastMsg||!lastMsg.dataset||lastMsg.dataset.day!==key){
+    const d=document.createElement("div"); d.className="day-divider"; d.textContent=dayLabel(m.ts); d.dataset.day=key; container.appendChild(d);
+  }
+  const el=msgEl(m,ctx); el.dataset.day=key;
+  container.appendChild(el);
+  if(nearBottom(container)) container.scrollTop=container.scrollHeight;
+}
+function renderLobby(){
+  const c=$("lobby-msgs");
+  const stick=nearBottom(c);
+  renderMsgs(c,S.lobby,"lobby");
+  if(!stick) c.scrollTop=c.scrollHeight;
+  renderPresence();
+  $("lobby-me-chip").textContent=S.me?S.me.id:"";
+  banner();
+}
+function renderPresence(){
+  const box=$("lobby-online");
+  if(!box) return;
+  box.innerHTML="";
+  const selfChip=document.createElement("span");
+  selfChip.className="online-chip";
+  selfChip.innerHTML="<span style='width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block'></span>"+esc(S.me?S.me.emoji+" "+S.me.nick+"（我）":"");
+  box.appendChild(selfChip);
+  Object.keys(P).forEach(id=>{
+    const p=P[id]; if(!p) return;
+    const c=document.createElement("span");
+    c.className="online-chip";
+    c.title="点此加好友";
+    c.innerHTML="<span style='width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block'></span>"+esc(p.emoji+" "+p.nick);
+    c.onclick=()=>{ if(S.friends[id]) openChat(id); else requestFriend(id); };
+    box.appendChild(c);
+  });
+  if(isView("friends")) renderFriends();
+}
+function renderFriends(){
+  const rl=$("reqs-list");
+  if(!S.reqIn.length) rl.innerHTML='<div class="empty-tip">暂时没有新的好友申请</div>';
+  else {
+    rl.innerHTML="";
+    S.reqIn.forEach(r=>{
+      const d=document.createElement("div"); d.className="req-card";
+      const ic=document.createElement("span"); ic.style.fontSize="26px"; ic.textContent=r.emoji;
+      const info=document.createElement("div"); info.style.flex="1"; info.style.minWidth="0";
+      info.innerHTML="<b>"+esc(r.nick)+"</b><div class='p-id'>匿名ID "+esc(r.id)+"</div>";
+      const acts=document.createElement("div"); acts.style.display="flex"; acts.style.gap="6px";
+      const ok=document.createElement("button"); ok.className="mini-btn ok"; ok.textContent="同意";
+      ok.onclick=()=>respondReq(r,true);
+      const no=document.createElement("button"); no.className="mini-btn danger"; no.textContent="拒绝";
+      no.onclick=()=>respondReq(r,false);
+      acts.appendChild(ok); acts.appendChild(no);
+      d.appendChild(ic); d.appendChild(info); d.appendChild(acts);
+      rl.appendChild(d);
+    });
+  }
+  const ol=$("online-list");
+  const strangers=Object.keys(P).filter(id=>!S.friends[id]&&id!==(S.me&&S.me.id));
+  if(!strangers.length) ol.innerHTML='<div class="empty-tip">当前没有可添加的新朋友在线，稍后自动刷新。</div>';
+  else {
+    ol.innerHTML="";
+    strangers.forEach(id=>{
+      const p=P[id];
+      const d=document.createElement("div"); d.className="person";
+      d.innerHTML="<div class='p-ava'>"+esc(p.emoji)+"<span class='p-on'></span></div>"+
+        "<div class='p-info'><div class='p-nick'>"+esc(p.nick)+"</div><div class='p-id'>匿名ID "+esc(p.id)+"</div></div>"+
+        "<div class='acts'><button class='mini-btn ok'>加好友</button></div>";
+      d.querySelector("button").onclick=()=>requestFriend(id);
+      ol.appendChild(d);
+    });
+  }
+  const fl=$("friends-list");
+  const ids=Object.keys(S.friends).filter(id=>id!==S.me.id);
+  $("friends-count").textContent="（"+ids.length+"）";
+  if(!ids.length) fl.innerHTML='<div class="empty-tip">还没有好友：让对方把「我的匿名ID」发给你，或从上面在线列表直接加。</div>';
+  else {
+    fl.innerHTML="";
+    ids.forEach(id=>{
+      const f=S.friends[id];
+      const online=!!P[id];
+      const d=document.createElement("div"); d.className="person";
+      d.innerHTML="<div class='p-ava'>"+esc(f.emoji)+(online?"<span class='p-on'></span>":"")+"</div>"+
+        "<div class='p-info'><div class='p-nick'>"+esc(f.nick)+"<span class='p-st"+(online?"":" off")+"'>"+(online?"● 在线":"○ 不在线")+"</span></div>"+
+        "<div class='p-id'>匿名ID "+esc(id)+"</div></div>"+
+        "<div class='acts'><button class='mini-btn ok'>留言</button><button class='mini-btn danger'>删除</button></div>";
+      const bs=d.querySelectorAll("button");
+      bs[0].onclick=()=>openChat(id);
+      bs[1].onclick=()=>removeFriend(id);
+      if(S.unread[id]){ const u=document.createElement("span"); u.className="badge"; u.style.position="static"; u.textContent=S.unread[id]; d.querySelector(".acts").appendChild(u); }
+      fl.appendChild(d);
+    });
+  }
+}
+function renderChat(){
+  const f=S.friends[S.peer];
+  if(!f){ $("chat-wrap").hidden=true; return; }
+  const online=!!P[S.peer];
+  $("chat-ava").textContent=f.emoji;
+  $("chat-title").textContent=f.nick;
+  $("chat-status").textContent=(online?"🟢 在线 · ":"⚪ 暂不在线 · 留言会存入云端，")+"匿名ID "+S.peer;
+  const c=$("chat-msgs");
+  renderMsgs(c,S.convs[S.peer]||[],"dm");
+  S.unread[S.peer]=0; saveUnread(); renderNav();
+}
+function openLightbox(src){ $("lb-img").src=src; $("lightbox").classList.add("open"); }
+function closeLightbox(){ $("lightbox").classList.remove("open"); $("lb-img").src=""; }
+
+/* ============ 好友 ============ */
+function requestFriend(idRaw){
+  const id=String(idRaw||"").trim().toUpperCase();
+  if(!id){ toast("请输入对方匿名ID","warn"); return; }
+  if(!S.me||id===S.me.id){ toast("不能添加自己哦","warn"); return; }
+  if(S.friends[id]){ toast("你们已经是好友啦","warn"); return; }
+  const run=async()=>{
+    try {
+      const dup = await listAll(T.req, { to_id:"eq."+id, from_id:"eq."+S.me.id }, null, 1);
+      if (dup.length){ toast("申请已发出，等待对方处理","ok"); return; }
+      await insertRow(T.req, { to_id:id, from_id:S.me.id, from_nick:S.me.nick, from_emoji:S.me.emoji, ts:Date.now() });
+      toast("好友申请已放入云端 ✅（对方打开网页即可看到）","ok");
+    } catch(e){ toast("发送失败："+(e&&e.message?e.message:e),"warn"); }
+  };
+  run();
+}
+async function respondReq(r, accept){
+  try {
+    try { await deleteRows(T.req, { to_id:"eq." + S.me.id, from_id:"eq." + r.id }); } catch(e){}
+    if (accept){
+      const pair = pairOf(S.me.id, r.id).split("~");
+      const meIsA = pair[0] === S.me.id;
+      const obj = { a: pair[0], b: pair[1], ts: Date.now() };
+      if (meIsA){ obj.a_nick = S.me.nick; obj.a_emoji = S.me.emoji; obj.b_nick = r.nick; obj.b_emoji = r.emoji; }
+      else { obj.b_nick = S.me.nick; obj.b_emoji = S.me.emoji; obj.a_nick = r.nick; obj.a_emoji = r.emoji; }
+      const dup = await listAll(T.f, { a:"eq."+pair[0], b:"eq."+pair[1] }, null, 1);
+      if (!dup.length) await insertRow(T.f, obj);
+      if (!S.friends[r.id]) S.friends[r.id] = { nick:r.nick, emoji:r.emoji, addedAt:Date.now() };
+      saveFriends();
+      toast("🎉 你们已成为好友","ok");
+    } else { toast("已婉拒","ok"); }
+    S.reqIn=S.reqIn.filter(x=>x.id!==r.id); saveReqs();
+    renderNav();
+    if(isView("friends")) renderFriends();
+    await syncFriends();
+  } catch(e){ toast("操作失败："+(e&&e.message?e.message:e),"warn"); }
+}
+async function removeFriend(id){
+  if(!confirm("确定删除好友 "+(S.friends[id]?S.friends[id].nick:id)+" 吗？私聊云端记录仍在，只是不能再发新留言。")) return;
+  const p = pairOf(S.me.id, id).split("~");
+  try {
+    await deleteRows(T.f, { a:"eq."+p[0], b:"eq."+p[1] });
+    await deleteRows(T.f, { a:"eq."+p[1], b:"eq."+p[0] });
+  } catch(e){}
+  delete S.friends[id]; saveFriends();
+  if(S.peer===id){ S.peer=null; showView("friends"); }
+  if(isView("friends")) renderFriends();
+}
+function openChat(id){
+  const f=S.friends[id];
+  if(!f) return;
+  S.peer=id;
+  showView("chat");
+}
+
+/* ============ 心情日记 ============ */
+const MOOD_FACES={1:"😞",2:"😕",3:"😐",4:"🙂",5:"😄"};
+const MOOD_COLORS={1:"#8fa0c9",2:"#7fb7d9",3:"#f5cf6b",4:"#8fd68a",5:"#34c98e"};
+function moodToday(){ return S.moods[dayStr(Date.now())]||null; }
+function renderMoodFaces(){
+  const box=$("mood-faces"); box.innerHTML="";
+  const today=moodToday();
+  for(let v=1;v<=5;v++){
+    const b=document.createElement("button"); b.className="mface"; b.textContent=MOOD_FACES[v];
+    if(today&&today.mood===v) b.classList.add("on");
+    b.onclick=()=>{ S.selMood=v; document.querySelectorAll(".mface").forEach(x=>x.classList.remove("on")); b.classList.add("on"); };
+    box.appendChild(b);
+  }
+}
+function saveMood(){
+  const m=S.selMood||(moodToday()?moodToday().mood:0);
+  if(!m){ toast("先选一个今天的心情表情吧～","warn"); return; }
+  S.moods[dayStr(Date.now())]={mood:m,note:$("mood-note").value.trim(),ts:Date.now()};
+  saveMoods(); renderMood(); toast("已记录今天的心情 🌈","ok");
+}
+function moodStreak(){
+  const keyOf=(dd)=>dd.getFullYear()+"-"+pad(dd.getMonth()+1)+"-"+pad(dd.getDate());
+  let streak=0; const d=new Date();
+  if(!S.moods[keyOf(d)]) d.setDate(d.getDate()-1);
+  while(S.moods[keyOf(d)]){ streak++; d.setDate(d.getDate()-1); }
+  return streak;
+}
+function renderMood(){
+  renderMoodFaces();
+  const today=moodToday();
+  if(today){ $("mood-note").value=today.note||""; S.selMood=today.mood; }
+  $("mood-total").textContent=Object.keys(S.moods).length;
+  $("mood-streak").textContent=moodStreak();
+  const chart=$("mood-chart"); chart.innerHTML="";
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const key=d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+    const e=S.moods[key];
+    const col=document.createElement("div"); col.className="chart-col";
+    const bar=document.createElement("div"); bar.className="chart-bar";
+    const h=e?((e.mood-1)/4)*100:2;
+    bar.style.height=h+"%";
+    bar.style.background=e?MOOD_COLORS[e.mood]:"var(--line)";
+    bar.title=e?(MOOD_FACES[e.mood]+" "+(e.note||"无备注")):"未记录";
+    const lb=document.createElement("div"); lb.className="chart-lb";
+    lb.textContent=i===0?"今天":(d.getMonth()+1)+"/"+d.getDate();
+    col.appendChild(bar); col.appendChild(lb); chart.appendChild(col);
+  }
+  const list=$("mood-list"); list.innerHTML="";
+  const dates=Object.keys(S.moods).sort().reverse().slice(0,30);
+  if(!dates.length) list.innerHTML='<div class="empty-tip">还没有记录。心情低落时记一笔，会发现情绪总会过去的。</div>';
+  dates.forEach(date=>{
+    const e=S.moods[date];
+    const d=document.createElement("div"); d.className="entry";
+    const fd=document.createElement("div"); fd.className="e-face"; fd.textContent=MOOD_FACES[e.mood];
+    const mid=document.createElement("div"); mid.style.flex="1"; mid.style.minWidth="0";
+    const note=document.createElement("div"); note.className="e-note"; note.textContent=e.note||"（今天没有写备注）";
+    const t=document.createElement("div"); t.className="e-time"; t.textContent=date+"  "+fmtClock(e.ts);
+    const del=document.createElement("button"); del.className="del-btn"; del.textContent="删除";
+    del.onclick=()=>{ delete S.moods[date]; saveMoods(); renderMood(); };
+    mid.appendChild(note); mid.appendChild(t);
+    d.appendChild(fd); d.appendChild(mid); d.appendChild(del);
+    list.appendChild(d);
+  });
+}
+
+/* ============ 呼吸练习 ============ */
+const PATTERNS=[
+  {name:"平静呼吸",seq:[["吸气",4],["呼气",6]],desc:"适合日常放松：吸 4 秒、呼 6 秒"},
+  {name:"4-7-8 放松呼吸",seq:[["吸气",4],["屏息",7],["呼气",8]],desc:"入睡困难、焦虑时使用，重复 4 轮"},
+  {name:"方形呼吸（箱式）",seq:[["吸气",4],["屏息",4],["呼气",4],["屏息",4]],desc:"紧张时稳定心率的经典方法"}
+];
+function renderPatterns(){
+  const box=$("pat-list"); box.innerHTML="";
+  PATTERNS.forEach((p,i)=>{
+    const d=document.createElement("div"); d.className="pat"+(i===0?" on":""); d.dataset.i=i;
+    d.innerHTML="<div><b>"+esc(p.name)+"</b><small>"+esc(p.desc)+"</small></div><span style='font-size:18px'>"+(i===0?"✅":"○")+"</span>";
+    d.onclick=()=>{ stopBreath(); document.querySelectorAll(".pat").forEach(x=>x.classList.remove("on")); d.classList.add("on"); };
+    box.appendChild(d);
+  });
+}
+function currentPattern(){ const i=document.querySelector(".pat.on"); return PATTERNS[i?+i.dataset.i:0]; }
+function stopBreath(){
+  S.breathToken++; S.breathRun=false;
+  $("breath-start").textContent="开始 ▶";
+  const c=$("breath-circle");
+  c.style.transition="transform .6s ease"; c.style.transform="scale(.92)";
+  $("breath-phase").textContent="准备开始";
+}
+function waitSec(sec,token){
+  return new Promise(res=>{
+    const iv=setInterval(()=>{ if(token!==S.breathToken||!S.breathRun){ clearInterval(iv); res(); } },100);
+    setTimeout(()=>{ clearInterval(iv); res(); },sec*1000);
+  });
+}
+async function runBreath(){
+  const pat=currentPattern();
+  const token=++S.breathToken;
+  S.breathRun=true;
+  $("breath-start").textContent="停止 ■";
+  const circle=$("breath-circle");
+  let round=0;
+  $("breath-rounds").textContent="已完成 0 轮";
+  while(S.breathRun&&token===S.breathToken){
+    for(const [label,sec] of pat.seq){
+      if(!S.breathRun||token!==S.breathToken) return;
+      $("breath-phase").textContent=label+" · "+sec+" 秒";
+      if(label==="屏息"){
+        circle.style.transition="transform .8s ease";
+        circle.style.transform=circle.style.transform||"scale(1.45)";
+        await waitSec(sec,token);
+      } else if(label==="吸气"){
+        circle.style.transition="transform "+sec+"s ease-in-out";
+        circle.style.transform="scale(1.45)";
+        await waitSec(sec,token);
+      } else {
+        circle.style.transition="transform "+sec+"s ease-in-out";
+        circle.style.transform="scale(.92)";
+        await waitSec(sec,token);
+      }
+    }
+    round++;
+    $("breath-rounds").textContent="已完成 "+round+" 轮";
+  }
+}
+
+/* ============ 心理资源 ============ */
+const QUOTES=[
+  "你不必立刻好起来，慢慢来，也是一种前进。",
+  "情绪没有对错，它只是路过你的身体，想要被看见。",
+  "你已经撑过了很多个你以为撑不过去的时刻，这次也一样。",
+  "向别人求助不是软弱，而是对自己温柔。",
+  "你不是一个人，这间小站里，总有人愿意听你说。",
+  "允许自己有坏心情，就像允许天空有阴雨天。",
+  "今天的你辛苦了，先照顾好自己，其他的都不急。"
+];
+function pickQuote(){ $("res-quote").textContent=QUOTES[Math.floor(Math.random()*QUOTES.length)]; }
+function renderHotlines(){
+  const box=$("res-hotlines"); box.innerHTML="";
+  const list=[
+    {ic:"💛",name:"全国统一心理援助热线",tel:"12356",note:"24小时 · 国家卫生健康委"},
+    {ic:"🧡",name:"北京心理危机研究与干预中心",tel:"010-82951332",note:"24小时 · 专业的危机干预之一"},
+    {ic:"💙",name:"青少年心理与法律热线",tel:"12355",note:"共青团 · 面向青少年"},
+    {ic:"💚",name:"希望 24 热线",tel:"400-161-9995",note:"全国心理危机干预"},
+    {ic:"❤️",name:"紧急情况",tel:"110/120",note:"出现伤害自己或他人的危险时请立即拨打"}
+  ];
+  list.forEach(h=>{
+    const d=document.createElement("div"); d.className="hotline";
+    d.innerHTML="<div class='h-ic'>"+h.ic+"</div><div><b>"+esc(h.name)+"</b><br><small style='color:var(--muted)'>"+esc(h.note)+"</small></div>"+
+      "<a class='tel' href='tel:"+h.tel+"'>"+esc(h.tel)+"</a>";
+    box.appendChild(d);
+  });
+}
+
+/* ============ 设置 / 备份 ============ */
+function renderSettings(){
+  if(!S.me) return;
+  $("set-avatar").textContent=S.me.emoji;
+  $("set-nick").textContent=S.me.nick;
+  $("set-id").textContent=S.me.id;
+  $("cloud-state").textContent=S.online?"✅ 已连接":(CFG?"未连接":"未配置");
+  let bytes=0;
+  try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf("xlh.")===0) bytes+=(localStorage.getItem(k)||"").length*2; } }catch(e){}
+  $("storage-txt").textContent=Math.round(bytes/1024)+" KB";
+  $("storage-fill").style.width=Math.min(100,bytes/1024/(5*1024)*100)+"%";
+}
+function exportJSON(){
+  const data={ app:"心灵驿站", version:"supabase", exportedAt:new Date().toISOString(), me:S.me, lobby:S.lobby, friends:S.friends, convs:S.convs, moods:S.moods, reqIn:S.reqIn };
+  download(JSON.stringify(data,null,1),"心灵驿站备份_"+dayStr(Date.now())+".json","application/json");
+  toast("备份已导出，请妥善保存 ✅","ok");
+}
+function exportTxt(){
+  const lines=[];
+  lines.push("===== 心灵驿站 · 聊天记录导出 "+new Date().toLocaleString("zh-CN")+" =====");
+  lines.push("我的匿名身份："+S.me.nick+"（"+S.me.emoji+"） 匿名ID "+S.me.id+"\n");
+  lines.push("---- 匿名广场 ----");
+  S.lobby.forEach(m=>{
+    const who=m.from==="SYS"?"驿站小助手":m.nick;
+    if(m.kind==="text") lines.push("["+fmtDay(m.ts)+"] "+who+"："+m.text);
+    else if(m.kind==="image") lines.push("["+fmtDay(m.ts)+"] "+who+"：[图片]");
+    else if(m.kind==="video") lines.push("["+fmtDay(m.ts)+"] "+who+"：[视频]");
+  });
+  Object.keys(S.convs).forEach(id=>{
+    const f=S.friends[id];
+    lines.push("\n---- 与 "+(f?f.nick:id)+"（匿名ID "+id+"）的留言 ----");
+    (S.convs[id]||[]).forEach(m=>{
+      const who=m.from==="SYS"?"驿站小助手":(m.from===S.me.id?S.me.nick:(f?f.nick:m.nick));
+      if(m.kind==="text") lines.push("["+fmtDay(m.ts)+"] "+who+"："+m.text);
+      else if(m.kind==="image") lines.push("["+fmtDay(m.ts)+"] "+who+"：[图片]");
+      else if(m.kind==="video") lines.push("["+fmtDay(m.ts)+"] "+who+"：[视频]");
+    });
+  });
+  download("\uFEFF"+lines.join("\n"),"聊天记录_"+dayStr(Date.now())+".txt","text/plain;charset=utf-8");
+  toast("文字聊天记录已导出 ✅","ok");
+}
+function download(content,name,type){
+  const blob=new Blob([content],{type});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
+}
+function importJSON(file){
+  const fr=new FileReader();
+  fr.onload=()=>{
+    try{
+      const d=JSON.parse(fr.result);
+      if(d.app!=="心灵驿站") throw new Error("bad");
+      const dedupe=(arr)=>{ const seen=new Set(),out=[]; (arr||[]).forEach(m=>{ if(m&&m.id&&!seen.has(m.id)){ seen.add(m.id); out.push(m); } }); return out; };
+      if(Array.isArray(d.lobby)){ S.lobby=dedupe(d.lobby.concat(S.lobby)); if(S.lobby.length>800) S.lobby=S.lobby.slice(-800); saveLobby(); }
+      if(d.me&&d.me.id&&!lsGet("me",null)){ S.me=d.me; saveMe(); }
+      if(d.friends){ Object.assign(S.friends,d.friends); saveFriends(); }
+      if(d.convs){ Object.keys(d.convs).forEach(k=>{ S.convs[k]=dedupe((S.convs[k]||[]).concat(d.convs[k])); if(S.convs[k].length>1000) S.convs[k]=S.convs[k].slice(-1000); }); saveConvs(); }
+      if(d.moods){ Object.assign(S.moods,d.moods); saveMoods(); }
+      if(d.reqIn){ S.reqIn=dedupe(S.reqIn.concat(d.reqIn)).filter(x=>x&&x.id).map(x=>({id:x.id,nick:x.nick,emoji:x.emoji,ts:x.ts})); saveReqs(); }
+      toast("导入成功 ✅","ok");
+      renderAll();
+    }catch(e){ toast("文件格式不正确，导入失败","warn"); }
+  };
+  fr.readAsText(file);
+}
+function clearAll(){
+  if(!confirm("确定清空本机缓存吗？只影响本机，云端数据不受影响。建议先导出备份。")) return;
+  try{
+    const ks=[];
+    for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf("xlh.")===0&&k!=="xlh.theme"&&k!=="xlh.supa") ks.push(k); }
+    ks.forEach(k=>localStorage.removeItem(k));
+  }catch(e){}
+  location.reload();
+}
+function renderAll(){
+  renderNav(); renderPresence(); renderSettings();
+  if(curView==="lobby") renderLobby();
+  if(curView==="friends") renderFriends();
+  if(curView==="mood") renderMood();
+  banner();
+}
+function seedWelcome(){
+  const t=Date.now();
+  S.lobby.push(
+    {id:"sys-w-"+t,from:"SYS",nick:"驿站小助手",emoji:"🌿",ts:t,kind:"text",text:"欢迎来到心灵驿站！这里是匿名空间：昵称旁边没有真名，说的话会被温柔对待。",sys:true},
+    {id:"sys-w2-"+t,from:"SYS",nick:"驿站小助手",emoji:"🌸",ts:t+1000,kind:"text",text:"留言信箱式交流：你现在说的话会放进云端，对方不用同时在线，打开网页就能收到；也可以发图片/视频。",sys:true}
+  );
+  saveLobby();
+  if(isView("lobby")) renderLobby();
+}
+
+/* ============ 头像 / 主题 ============ */
+function renderAvatarGrid(grid,pick){
+  grid.innerHTML="";
+  AVATARS.forEach(a=>{
+    const b=document.createElement("button");
+    b.textContent=a;
+    b.onclick=()=>{ grid.querySelectorAll("button").forEach(x=>x.classList.remove("on")); b.classList.add("on"); pick(a); };
+    grid.appendChild(b);
+  });
+}
+function applyTheme(){ $("btn-theme").textContent=document.documentElement.classList.contains("dark")?"☀️":"🌙"; }
+function toggleTheme(){
+  const dark=document.documentElement.classList.toggle("dark");
+  try{ localStorage.setItem("xlh.theme",dark?"dark":"light"); }catch(e){}
+  applyTheme();
+}
+
+/* ============ 启动 ============ */
+function boot(){
+  applyTheme();
+  loadCfg();
+  S.me=lsGet("me",null);
+  S.lobby=lsGet("lobby",[]);
+  S.cur=lsGet("cursor",{lobby:0,dm:{}});
+  if(!S.cur||typeof S.cur!=="object") S.cur={lobby:0,dm:{}};
+  S.friends=lsGet("friends",{});
+  S.convs=lsGet("convs",{});
+  S.reqIn=lsGet("reqIn",[]);
+  S.unread=lsGet("unread",{});
+  S.moods=lsGet("moods",{});
+
+  renderAvatarGrid($("avatar-grid"),a=>{ S.pickingAva=a; $("avatar-grid").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.textContent===a)); });
+  renderAvatarGrid($("avatar-grid2"),a=>{ S.pickingAva=a; $("avatar-grid2").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.textContent===a)); });
+
+  bindCommon();
+
+  if(!S.me){
+    $("m-onboard").classList.remove("hidden");
+    S.pickingAva=AVATARS[0];
+    $("avatar-grid").querySelector("button").classList.add("on");
+    $("btn-enter").onclick=()=>{
+      const nick=$("inp-nick").value.trim()||"匿名同学"+Math.floor(Math.random()*90+10);
+      S.me={ id:genUid(), secret:genSecret(), nick:nick.slice(0,12), emoji:S.pickingAva||"🙂", createdAt:Date.now() };
+      saveMe();
+      $("m-onboard").classList.add("hidden");
+      afterIdentity();
+    };
+    $("inp-nick").addEventListener("keydown",e=>{ if(e.key==="Enter") $("btn-enter").click(); });
+    return;
+  }
+  afterIdentity();
+}
+function afterIdentity(){
+  setPill("off","连接中…");
+  renderAll();
+  showView("lobby");
+  renderPatterns();
+  renderHotlines();
+  renderMood();
+  checkOnline(true);   // 云端地址与公开密钥已内置，打开即自动连接
+}
+function bindCommon(){
+  document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>showView(t.dataset.view)));
+  $("btn-theme").addEventListener("click",toggleTheme);
+  $("btn-sync-now").addEventListener("click",()=>doSyncOnce());
+  $("btn-cloud-config").addEventListener("click",openSetup);
+  $("btn-cfg-save").addEventListener("click",saveSetup);
+  $("btn-cfg-later").addEventListener("click",closeSetup);
+  $("btn-copy-id").addEventListener("click",copyMeId);
+  $("lobby-me-chip").addEventListener("click",copyMeId);
+  function copyMeId(){
+    if(!S.me) return;
+    const done=()=>toast("匿名ID 已复制："+S.me.id,"ok");
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(S.me.id).then(done).catch(()=>fallbackCopy(done));
+    else fallbackCopy(done);
+  }
+  function fallbackCopy(done){
+    try{ const t=document.createElement("textarea"); t.value=S.me.id; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); done(); }
+    catch(e){ prompt("请手动复制你的匿名ID：",S.me.id); }
+  }
+  $("lb-send").addEventListener("click",()=>sendText("lobby"));
+  $("ch-send").addEventListener("click",()=>{ if(S.peer) sendText(S.peer); });
+  const taL=$("lb-input"),taC=$("ch-input");
+  [taL,taC].forEach(ta=>{
+    ta.addEventListener("keydown",e=>{
+      if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); if(ta===taL) sendText("lobby"); else if(S.peer) sendText(S.peer); }
+    });
+    ta.addEventListener("input",()=>{ ta.style.height="auto"; ta.style.height=Math.min(120,ta.scrollHeight)+"px"; });
+    ta.addEventListener("focus",()=>{ S.fileCtx=(ta===taL)?"lobby":(S.peer||"lobby"); });
+  });
+  const EMOJIS=["😊","🥰","😄","😆","🤗","😌","😇","🥹","😢","😭","😤","🤯","😳","🤔","👍","👏","💪","🌷","🌟","🍀","🐳","🌈","☕","🫂"];
+  [["btn-lb-emoji","emoji-lobby",taL],["btn-ch-emoji","emoji-chat",taC]].forEach(([bid,eid,ta])=>{
+    $(bid).addEventListener("click",()=>{
+      const t=$(eid);
+      const open=t.classList.toggle("open");
+      document.querySelectorAll(".emoji-tray").forEach(o=>{ if(o!==t) o.classList.remove("open"); });
+      if(open&&!t.children.length){ EMOJIS.forEach(e=>{ const sp=document.createElement("span"); sp.textContent=e; sp.onclick=()=>{ ta.value+=e; ta.focus(); }; t.appendChild(sp); }); }
+    });
+  });
+  document.addEventListener("click",(e)=>{ if(!e.target.closest(".composer")) document.querySelectorAll(".emoji-tray").forEach(o=>o.classList.remove("open")); });
+  const fi=$("f-input");
+  $("btn-lb-img").addEventListener("click",()=>{ S.fileCtx="lobby"; fi.accept="image/*"; fi.click(); });
+  $("btn-lb-video").addEventListener("click",()=>{ S.fileCtx="lobby"; fi.accept="video/*"; fi.click(); });
+  $("btn-ch-img").addEventListener("click",()=>{ S.fileCtx=S.peer||"lobby"; fi.accept="image/*"; fi.click(); });
+  $("btn-ch-video").addEventListener("click",()=>{ S.fileCtx=S.peer||"lobby"; fi.accept="video/*"; fi.click(); });
+  fi.addEventListener("change",()=>{
+    const file=fi.files&&fi.files[0];
+    if(file){ if(S.fileCtx==="lobby") sendMedia("lobby",file); else if(S.peer) sendMedia(S.peer,file); }
+    fi.value="";
+  });
+  $("btn-add").addEventListener("click",()=>{ requestFriend($("add-inp").value); $("add-inp").value=""; });
+  $("add-inp").addEventListener("keydown",e=>{ if(e.key==="Enter") $("btn-add").click(); });
+  $("chat-back").addEventListener("click",()=>{ S.peer=null; showView("friends"); });
+  $("mood-save").addEventListener("click",saveMood);
+  $("mood-note").addEventListener("keydown",e=>{ if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)) saveMood(); });
+  $("breath-start").addEventListener("click",()=>{ if(S.breathRun) stopBreath(); else runBreath(); });
+  $("btn-change-ava").addEventListener("click",()=>{
+    S.pickingAva=S.me.emoji;
+    $("m-avatar").classList.remove("hidden");
+    $("avatar-grid2").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.textContent===S.me.emoji));
+  });
+  $("btn-ava-ok").addEventListener("click",()=>{
+    if(S.pickingAva){ S.me.emoji=S.pickingAva; saveMe(); renderSettings(); renderPresence(); if(S.online){ ensureProfileRow().catch(()=>{}); } }
+    $("m-avatar").classList.add("hidden");
+  });
+  $("btn-ava-cancel").addEventListener("click",()=>$("m-avatar").classList.add("hidden"));
+  $("btn-change-nick").addEventListener("click",()=>{
+    const v=prompt("请输入新的匿名昵称（12字以内）：",S.me.nick);
+    if(v&&v.trim()){ S.me.nick=v.trim().slice(0,12); saveMe(); renderSettings(); renderPresence(); if(S.online){ ensureProfileRow().catch(()=>{}); } }
+  });
+  $("btn-regen").addEventListener("click",async()=>{
+    if(!confirm("将生成全新匿名ID与身份码。云端旧内容会保留在原ID名下（你无法再读取）；确定继续吗？")) return;
+    S.me.id=genUid(); S.me.secret=genSecret(); saveMe();
+    renderSettings(); renderPresence(); renderLobby();
+    if(S.online){ try{ await ensureProfileRow(); }catch(e){} }
+    toast("已重新匿名，你的新ID："+S.me.id+"\n请重新「📇 我的身份码」保存新码","ok");
+  });
+  /* 身份码：显示/复制 */
+  $("btn-ident-code").addEventListener("click",()=>{
+    const code = identCodeEncode();
+    if (!code){ toast("尚未完成身份创建","warn"); return; }
+    const done = () => toast("身份码已复制：请妥善保存，勿外泄（可换设备恢复同一位身份）","ok");
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done).catch(()=>{ prompt("请复制你的身份码（妥善保存）：", code); });
+    else prompt("请复制你的身份码（妥善保存）：", code);
+  });
+  /* 身份码：恢复 */
+  $("btn-ident-restore").addEventListener("click",()=>{
+    const inp = prompt("粘贴你的身份码（XL1: 开头）：", "");
+    if (!inp) return;
+    const o = identCodeDecode(inp);
+    if (!o){ toast("身份码无效，请完整复制","warn"); return; }
+    S.me = { id:o.id, secret:o.secret, nick:(o.nick||"匿名同学").slice(0,12), emoji:o.emoji||"🙂", createdAt: Date.now() };
+    saveMe();
+    // 提醒：此身份码与本机将绑定；若本机当前身份不同会切换
+    toast("身份已切换/恢复：" + S.me.nick + "（" + S.me.id + "）","ok");
+    renderSettings(); renderPresence(); renderLobby();
+    if (S.online){ ensureProfileRow().then(()=>{ syncFriends().catch(()=>{}); }).catch(e=>toast("恢复失败："+(e&&e.message?e.message:e),"warn")); }
+  });
+  $("btn-exp-json").addEventListener("click",exportJSON);
+  $("btn-exp-txt").addEventListener("click",exportTxt);
+  $("btn-import").addEventListener("click",()=>$("f-import").click());
+  $("f-import").addEventListener("change",()=>{ if($("f-import").files[0]) importJSON($("f-import").files[0]); $("f-import").value=""; });
+  $("btn-clear").addEventListener("click",clearAll);
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeLightbox(); });
+  document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden){ document.title="心灵驿站 · 匿名心理互助平台"; if(S.online){ doSyncOnce(); startHb(); } else if(S.me){ checkOnline(false).catch(()=>{}); } }
+  });
+  setInterval(()=>{
+    if(document.visibilityState!=="visible") return;
+    if(!S.online){
+      if(S.me && Date.now()-(S.lastTry||0)>30000){ S.lastTry=Date.now(); checkOnline(false).catch(()=>{}); }
+      return;
+    }
+    doSyncOnce();
+  },8000);
+}
+boot();
+</script>
+</body>
+</html>
